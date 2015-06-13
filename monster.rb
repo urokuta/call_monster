@@ -16,7 +16,7 @@ class Monster
       target = defense_monsters.last
       original_hp = target.hp
       target.hp -= self.atk
-      puts "name: #{name} => name: #{target.name} HP: #{original_hp} => #{target.hp}(#{self.atk})"
+      puts "ATTACK! #{name} => #{target.name} HP: #{original_hp} => #{target.hp}(#{self.atk})"
       if target.hp <= 0
         defense_monsters.pop()
       end

@@ -51,29 +51,33 @@ class CallMonster
     set_monsters
     my = my_monsters
     enemy = enemy_monsters
-    puts "!!!!!!!!!!!!!! INITIAL STATUS !!!!!!!!!!!!!"
+    puts "@@@@@@@@@@@@@ INITIAL STATUS @@@@@@@@@@@@@"
     print_both(my, enemy)
 
     initial_phase(my)
     initial_phase(enemy)
 
+    puts "@@@@@@@@@@@@@ INITIAL PHASE @@@@@@@@@@@@"
+    print_both(my, enemy)
+
+    puts "@@@@@@@@@@@@@ INITIAL WAKEUP ME @@@@@@@@@@@@"
     initial_wakeup(my)
+
+    puts "@@@@@@@@@@@@@ INITIAL WAKEUP ENEMY @@@@@@@@@@@@"
     initial_wakeup(enemy)
 
+    pair = [{name: :enemy, monsters: enemy}, {name: :my, monsters: my}]
     loop do
-      puts "@@@@@@@@@@@@@@@@ ENEMY_TURN @@@@@@@@@@@@@@@@@"
-      result = turn(enemy, my)
-      print_both(my, enemy)
+      attacker_name = pair.first[:name].upcase
+      puts "@@@@@@@@@@@@@@@@ #{attacker_name} TURN @@@@@@@@@@@@@@@@@"
+      attackers = pair.first[:monsters]
+      defenders = pair.last[:monsters]
+      result = turn(attackers, defenders)
+      print_both(attackers, defenders)
       if result == :game_end
-        return :enemy_win
-      else
-        puts "@@@@@@@@@@@@@@@@ MY_TURN @@@@@@@@@@@@@@@@@"
-        result = turn(my, enemy)
-        print_both(my, enemy)
-        if result == :game_end
-          return :my_win
-        end
+        return "#{attacker_name} WIN"
       end
+      pair = [pair.last, pair.first]
     end
   end
 
@@ -85,7 +89,12 @@ class CallMonster
   end
 
   def initial_wakeup(monsters)
-    monsters.map{|m| m.wake -= 1 if m.wake > 0}
+    monsters.each do |m|
+      if m.wake == 1
+        puts "WAKE UP : #{m.name}"
+      end
+      m.wake -= 1 if m.wake > 0
+    end
   end
   
   def turn(attackers, defenders)
@@ -100,14 +109,15 @@ class CallMonster
 
   def print(monsters)
     monsters.each do |m|
-      puts m.to_s
+      puts "   " + m.to_s
     end
   end
 
-  def print_both(my, enemy)
-    puts "###   ME  ###" 
-    print(my)
-    puts "### ENEMY ###" 
-    print(enemy)
+  def print_both(attackers, defenders)
+    puts ""
+    puts "   ### ATTACKERS ###" 
+    print(attackers)
+    puts "   ### DEFENDERS ###" 
+    print(defenders)
   end
 end
