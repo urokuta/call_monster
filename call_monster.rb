@@ -10,8 +10,9 @@ class CallMonster
       %w(4 スノーダンサー hoihoi 40 4 9 ice none),
       %w(5 ギョック uoza 60 7 12 fire none),
       %w(6 グラスホーン wadasen 80 7 12 ice none),
-      %w(7 スケルトス sensi 40 5 9 fire resist_fire),
-      %w(8 シャーベラット abc 30 1 6 ice none),
+      %w(7 スケルトス sensi 40 4 12 physics none),
+      %w(8 モエボン mera 40 5 9 fire resist_fire),
+      %w(9 シャーベラット abc 30 1 6 ice none),
     ]
     @monsters = []
     ms.each do |m|
@@ -50,10 +51,30 @@ class CallMonster
     set_monsters
     my = my_monsters
     enemy = enemy_monsters
+    puts "!!!!!!!!!!!!!! INITIAL STATUS !!!!!!!!!!!!!"
+    print_both(my, enemy)
 
-    my = initial_phase(my_monsters)
-    enemy = initial_phase(enemy_monsters)
+    initial_phase(my)
+    initial_phase(enemy)
+
+    initial_wakeup(my)
     initial_wakeup(enemy)
+
+    loop do
+      puts "@@@@@@@@@@@@@@@@ ENEMY_TURN @@@@@@@@@@@@@@@@@"
+      result = turn(enemy, my)
+      print_both(my, enemy)
+      if result == :game_end
+        return :enemy_win
+      else
+        puts "@@@@@@@@@@@@@@@@ MY_TURN @@@@@@@@@@@@@@@@@"
+        result = turn(my, enemy)
+        print_both(my, enemy)
+        if result == :game_end
+          return :my_win
+        end
+      end
+    end
   end
 
   def initial_phase(monsters)
@@ -64,12 +85,29 @@ class CallMonster
   end
 
   def initial_wakeup(monsters)
-    monsters.map{|m| m.wake -= 1}
+    monsters.map{|m| m.wake -= 1 if m.wake > 0}
   end
   
   def turn(attackers, defenders)
-    attackers.each do 
-      attacker.action(defenders)
+    attackers.each do |a|
+      a.action(defenders)
+      if defenders.size == 0
+        return :game_end
+      end
     end
+    return :continue
+  end
+
+  def print(monsters)
+    monsters.each do |m|
+      puts m.to_s
+    end
+  end
+
+  def print_both(my, enemy)
+    puts "###   ME  ###" 
+    print(my)
+    puts "### ENEMY ###" 
+    print(enemy)
   end
 end

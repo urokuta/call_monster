@@ -14,12 +14,18 @@ class Monster
   def action(defense_monsters)
     if wake <= 0
       target = defense_monsters.last
+      original_hp = target.hp
       target.hp -= self.atk
+      puts "name: #{name} => name: #{target.name} HP: #{original_hp} => #{target.hp}(#{self.atk})"
       if target.hp <= 0
         defense_monsters.pop()
       end
     else
       self.wake -= 1
     end
+  end
+
+  def to_s
+    "id: #{id}, wake: #{wake}, hp: #{hp}, atk: #{atk}, name: #{name}"
   end
 end
